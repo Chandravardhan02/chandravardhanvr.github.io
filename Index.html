@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chandravardhan V R — Data Scientist & ML Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Departure+Mono&family=Bricolage+Grotesque:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET & ROOT ─────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0e0e0e;
+  --paper:#f5f0e8;
+  --cream:#ede8dc;
+  --warm:#d4c9b0;
+  --ghost:#a89e88;
+  --accent:#c8392b;
+  --accent2:#e8a020;
+  --green:#2a7a4b;
+  --blue:#1a4a8a;
+  --ff-serif:'Instrument Serif',Georgia,serif;
+  --ff-sans:'Bricolage Grotesque',sans-serif;
+  --ff-mono:'Departure Mono',monospace;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--ff-sans);
+  overflow-x:hidden;
+  cursor:none;
+}
+::selection{background:var(--accent);color:var(--paper)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--ink)}
+
+/* ─── CUSTOM CURSOR ────────────────────────────── */
+#cur{
+  position:fixed;width:12px;height:12px;
+  background:var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s,background 0.2s,width 0.2s,height 0.2s;
+  mix-blend-mode:multiply;
+}
+#cur-trail{
+  position:fixed;width:40px;height:40px;
+  border:1.5px solid var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.06s linear,border-color 0.2s;
+  opacity:0.4;
+}
+body.hovering #cur{width:48px;height:48px;background:var(--accent);mix-blend-mode:normal;opacity:0.15}
+body.hovering #cur-trail{opacity:0;border-color:var(--accent)}
+body.clicking #cur{transform:translate(-50%,-50%) scale(0.6)}
+
+/* ─── NOISE TEXTURE ────────────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;
+  opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ─── NAV ──────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.2rem 3.5rem;
+  border-bottom:1px solid var(--warm);
+  background:rgba(245,240,232,0.92);
+  backdrop-filter:blur(20px);
+}
+.nav-logo{
+  font-family:var(--ff-serif);font-size:1.1rem;font-style:italic;
+  color:var(--ink);text-decoration:none;letter-spacing:-0.01em;
+}
+.nav-links{display:flex;gap:2.5rem;list-style:none;align-items:center}
+.nav-links a{
+  font-family:var(--ff-mono);font-size:0.65rem;
+  color:var(--ghost);text-decoration:none;letter-spacing:0.1em;
+  text-transform:uppercase;transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{
+  font-family:var(--ff-mono);font-size:0.65rem;letter-spacing:0.08em;
+  text-transform:uppercase;padding:0.5rem 1.2rem;
+  border:1px solid var(--ink);color:var(--ink);
+  text-decoration:none;transition:all 0.2s;border-radius:2px;
+}
+.nav-cta:hover{background:var(--ink);color:var(--paper)}
+
+/* ─── HERO ─────────────────────────────────────── */
+#hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:7rem 3.5rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg-text{
+  position:absolute;bottom:-0.1em;right:-0.05em;
+  font-family:var(--ff-serif);font-size:clamp(10rem,22vw,22rem);
+  font-style:italic;color:transparent;
+  -webkit-text-stroke:1px var(--warm);
+  line-height:1;pointer-events:none;user-select:none;
+  z-index:0;white-space:nowrap;
+}
+.hero-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  font-family:var(--ff-mono);font-size:0.65rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--ghost);
+  border:1px solid var(--warm);padding:0.35rem 0.9rem;
+  border-radius:100px;margin-bottom:2.5rem;
+}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+
+h1.hero-h{
+  font-family:var(--ff-serif);
+  font-size:clamp(3.5rem,7.5vw,7rem);
+  font-weight:400;line-height:0.95;
+  letter-spacing:-0.02em;
+  margin-bottom:2rem;
+  max-width:900px;
+}
+h1.hero-h em{font-style:italic;color:var(--accent)}
+h1.hero-h .cursor-blink{
+  display:inline-block;width:3px;height:0.85em;
+  background:var(--accent);vertical-align:middle;
+  margin-left:4px;animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.hero-bottom{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-top:3rem;gap:3rem;flex-wrap:wrap;
+}
+.hero-desc{
+  font-size:1rem;color:var(--ghost);line-height:1.8;
+  max-width:480px;font-weight:300;
+}
+.hero-desc strong{color:var(--ink);font-weight:500}
+.hero-desc em{color:var(--accent);font-style:normal;font-weight:500}
+
+.hero-actions{display:flex;flex-direction:column;gap:0.75rem;align-items:flex-end;flex-shrink:0}
+.btn-main{
+  font-family:var(--ff-mono);font-size:0.7rem;letter-spacing:0.08em;
+  text-transform:uppercase;padding:0.9rem 2.2rem;
+  background:var(--ink);color:var(--paper);
+  text-decoration:none;border-radius:2px;
+  transition:all 0.25s;display:inline-block;
+  border:1px solid var(--ink);
+}
+.btn-main:hover{background:var(--accent);border-color:var(--accent)}
+.btn-sec{
+  font-family:var(--ff-mono);font-size:0.7rem;letter-spacing:0.08em;
+  text-transform:uppercase;padding:0.9rem 2.2rem;
+  background:transparent;color:var(--ink);
+  text-decoration:none;border-radius:2px;
+  transition:all 0.25s;display:inline-block;
+  border:1px solid var(--warm);
+}
+.btn-sec:hover{border-color:var(--ink)}
+
+/* ─── PROOF TICKER ─────────────────────────────── */
+.ticker-wrap{
+  border-top:1px solid var(--warm);border-bottom:1px solid var(--warm);
+  overflow:hidden;background:var(--ink);color:var(--paper);
+  padding:0.7rem 0;
+}
+.ticker{
+  display:flex;gap:0;white-space:nowrap;
+  animation:ticker 22s linear infinite;
+}
+.ticker:hover{animation-play-state:paused}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:1.5rem;
+  padding:0 2.5rem;font-family:var(--ff-mono);font-size:0.65rem;
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+.ticker-val{color:var(--accent2);font-size:0.8rem;font-weight:700}
+.ticker-sep{color:var(--ghost);opacity:0.4}
+
+/* ─── SECTIONS ─────────────────────────────────── */
+.section{padding:7rem 3.5rem;max-width:1100px;margin:0 auto}
+.sec-label{
+  font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--ghost);
+  display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;
+}
+.sec-label::after{content:'';flex:1;max-width:60px;height:1px;background:var(--warm)}
+.sec-head{
+  font-family:var(--ff-serif);
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  font-weight:400;line-height:1.0;
+  letter-spacing:-0.02em;margin-bottom:3.5rem;
+}
+.sec-head em{font-style:italic;color:var(--accent)}
+
+/* ─── ABOUT ─────────────────────────────────────── */
+#about{background:var(--cream);padding:7rem 0;margin:0}
+.about-inner{max-width:1100px;margin:0 auto;padding:0 3.5rem}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:0}
+.about-card{
+  background:var(--paper);padding:2.5rem;
+  border:1px solid var(--warm);
+  position:relative;overflow:hidden;
+  transition:background 0.3s;
+}
+.about-card:hover{background:var(--ink);color:var(--paper)}
+.about-card:hover .ac-label{color:rgba(255,255,255,0.3)}
+.about-card:hover .ac-text{color:rgba(255,255,255,0.7)}
+.about-card:hover .ac-text strong{color:var(--paper)}
+.about-card:hover .ac-text em{color:var(--accent2)}
+.about-card:hover .ac-num{color:rgba(255,255,255,0.05)}
+.ac-num{
+  position:absolute;top:-0.2em;right:0.2rem;
+  font-family:var(--ff-serif);font-size:8rem;
+  font-style:italic;color:var(--cream);
+  line-height:1;pointer-events:none;
+  transition:color 0.3s;
+}
+.ac-label{
+  font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--ghost);
+  margin-bottom:1.25rem;position:relative;z-index:1;
+  transition:color 0.3s;
+}
+.ac-text{
+  font-size:0.95rem;line-height:1.85;color:var(--ghost);
+  position:relative;z-index:1;font-weight:300;
+  transition:color 0.3s;
+}
+.ac-text strong{color:var(--ink);font-weight:500;transition:color 0.3s}
+.ac-text em{color:var(--accent);font-style:normal;font-weight:500;transition:color 0.3s}
+
+/* ─── PROJECTS ──────────────────────────────────── */
+.proj-intro{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:3rem;
+}
+.proj-hint{
+  font-family:var(--ff-mono);font-size:0.65rem;
+  color:var(--ghost);letter-spacing:0.06em;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.proj-hint::before{content:'↓';font-size:0.8rem}
+
+.proj-item{
+  border-top:1px solid var(--warm);
+  overflow:hidden;
+}
+.proj-item:last-child{border-bottom:1px solid var(--warm)}
+
+.proj-row{
+  display:grid;grid-template-columns:80px 1fr auto auto;
+  align-items:center;gap:2rem;
+  padding:1.75rem 0;cursor:none;
+  transition:padding 0.3s;
+}
+.proj-row:hover .proj-title{color:var(--accent)}
+.proj-num{
+  font-family:var(--ff-serif);font-size:2.5rem;font-style:italic;
+  color:var(--warm);line-height:1;transition:color 0.2s;
+}
+.proj-item:hover .proj-num{color:var(--accent)}
+.proj-title{
+  font-family:var(--ff-serif);font-size:1.6rem;font-weight:400;
+  letter-spacing:-0.015em;transition:color 0.2s;
+}
+.proj-badge{
+  font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.1em;
+  text-transform:uppercase;padding:0.3rem 0.8rem;
+  border-radius:100px;white-space:nowrap;
+}
+.b-green{background:#e8f5ee;color:var(--green);border:1px solid #b8dfc8}
+.b-blue{background:#e8eef8;color:var(--blue);border:1px solid #b8cce8}
+.b-red{background:#fde8e6;color:var(--accent);border:1px solid #f0c0bb}
+.proj-toggle{
+  font-family:var(--ff-mono);font-size:0.65rem;color:var(--ghost);
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:color 0.2s;padding:0.5rem;
+}
+.proj-item:hover .proj-toggle{color:var(--ink)}
+.toggle-icon{
+  width:22px;height:22px;border:1px solid var(--warm);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;transition:all 0.3s;
+}
+.proj-item.open .toggle-icon{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:rotate(45deg)}
+
+/* CASE STUDY PANEL */
+.case-panel{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.proj-item.open .case-panel{max-height:900px}
+.case-inner{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:0;border-top:1px solid var(--warm);
+  background:var(--cream);
+}
+.case-block{
+  padding:2rem;border-right:1px solid var(--warm);
+}
+.case-block:last-child{border-right:none}
+.cb-label{
+  font-family:var(--ff-mono);font-size:0.58rem;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--ghost);
+  margin-bottom:1rem;padding-bottom:0.75rem;
+  border-bottom:1px solid var(--warm);
+}
+.cb-text{
+  font-size:0.88rem;color:var(--ghost);line-height:1.8;font-weight:300;
+}
+.cb-text strong{color:var(--ink);font-weight:500}
+.cb-text em{color:var(--accent);font-style:normal;font-weight:500}
+.case-footer{
+  padding:1.25rem 2rem;background:var(--paper);
+  border-top:1px solid var(--warm);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.stack-tags{display:flex;flex-wrap:wrap;gap:6px}
+.stag{
+  font-family:var(--ff-mono);font-size:0.6rem;
+  color:var(--ghost);border:1px solid var(--warm);
+  padding:2px 8px;border-radius:2px;letter-spacing:0.04em;
+}
+.case-links{display:flex;gap:1rem}
+.clink{
+  font-family:var(--ff-mono);font-size:0.65rem;color:var(--ghost);
+  text-decoration:none;letter-spacing:0.06em;
+  transition:color 0.2s;display:flex;align-items:center;gap:3px;
+}
+.clink:hover{color:var(--accent)}
+.clink::after{content:'↗';font-size:0.7rem}
+
+/* ─── SKILLS ─────────────────────────────────────── */
+#skills{background:var(--ink);color:var(--paper);padding:7rem 0;margin:0}
+.skills-inner{max-width:1100px;margin:0 auto;padding:0 3.5rem}
+#skills .sec-label{color:rgba(255,255,255,0.3)}
+#skills .sec-label::after{background:rgba(255,255,255,0.1)}
+#skills .sec-head{color:var(--paper)}
+#skills .sec-head em{color:var(--accent2)}
+.skills-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px;overflow:hidden;
+}
+.sg{
+  background:var(--ink);padding:2rem 1.75rem;
+  transition:background 0.25s;
+}
+.sg:hover{background:#1a1a1a}
+.sg-label{
+  font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:rgba(255,255,255,0.25);
+  margin-bottom:1.25rem;padding-bottom:0.9rem;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.sk-list{list-style:none;display:flex;flex-direction:column;gap:0.6rem}
+.sk-list li{
+  font-size:0.88rem;color:rgba(255,255,255,0.5);
+  display:flex;align-items:center;gap:10px;
+  transition:color 0.2s;
+}
+.sg:hover .sk-list li{color:rgba(255,255,255,0.7)}
+.sk-list li::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--accent2);flex-shrink:0;
+  opacity:0.5;
+}
+.sg:hover .sk-list li::before{opacity:1}
+.skill-proof{
+  text-align:center;padding:1.5rem;
+  font-family:var(--ff-mono);font-size:0.65rem;
+  color:rgba(255,255,255,0.2);letter-spacing:0.06em;
+  margin-top:1.5rem;
+}
+
+/* ─── CONTACT ────────────────────────────────────── */
+#contact{padding:7rem 0;margin:0}
+.contact-inner{max-width:1100px;margin:0 auto;padding:0 3.5rem}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.contact-sub{
+  font-size:1rem;color:var(--ghost);line-height:1.85;
+  margin-bottom:2.5rem;font-weight:300;
+}
+.contact-sub strong{color:var(--ink);font-weight:500}
+.contact-manifesto{
+  font-family:var(--ff-serif);font-size:1.4rem;font-style:italic;
+  color:var(--ghost);line-height:1.5;
+  border-left:2px solid var(--accent);padding-left:1.5rem;
+  margin-bottom:2.5rem;
+}
+.slinks{display:flex;flex-direction:column;gap:1px;background:var(--warm)}
+.slink{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem;background:var(--paper);
+  text-decoration:none;transition:background 0.2s;
+}
+.slink:hover{background:var(--ink)}
+.slink:hover .sl-name{color:var(--paper)}
+.slink:hover .sl-desc{color:rgba(255,255,255,0.4)}
+.slink:hover .sl-arr{color:var(--accent2)}
+.slink-l{display:flex;align-items:center;gap:1rem}
+.sl-icon{
+  width:36px;height:36px;border:1px solid var(--warm);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-mono);font-size:0.65rem;color:var(--ghost);
+  transition:all 0.2s;flex-shrink:0;
+}
+.slink:hover .sl-icon{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.1);color:var(--paper)}
+.sl-name{font-size:0.95rem;color:var(--ink);font-weight:500;transition:color 0.2s}
+.sl-desc{font-family:var(--ff-mono);font-size:0.6rem;color:var(--ghost);margin-top:2px;transition:color 0.2s;letter-spacing:0.04em}
+.sl-arr{font-size:1.1rem;color:var(--ghost);transition:all 0.2s}
+.slink:hover .sl-arr{transform:translate(3px,-3px)}
+
+/* ─── FOOTER ─────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--warm);
+  padding:2rem 3.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+  max-width:100%;
+}
+.foot-l,.foot-r{font-family:var(--ff-mono);font-size:0.6rem;color:var(--ghost);letter-spacing:0.08em;text-transform:uppercase}
+
+/* ─── SCROLL REVEAL ──────────────────────────────── */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.show{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal-l.show{opacity:1;transform:translateX(0)}
+.d1{transition-delay:0.1s}.d2{transition-delay:0.2s}.d3{transition-delay:0.3s}.d4{transition-delay:0.4s}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  #hero,.section,.about-inner,.skills-inner,.contact-inner{padding-left:1.5rem;padding-right:1.5rem}
+  .hero-bg-text{font-size:30vw}
+  .about-grid{grid-template-columns:1fr}
+  .case-inner{grid-template-columns:1fr}
+  .case-block{border-right:none;border-bottom:1px solid var(--warm)}
+  .skills-grid{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .proj-row{grid-template-columns:60px 1fr;gap:1rem}
+  .proj-badge,.proj-toggle{display:none}
+  footer{padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur"></div>
+<div id="cur-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">Chandravardhan V R </a><!-- REPLACE [YOUR NAME] -->
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">Let's talk</a>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section id="hero">
+  <div class="hero-bg-text">WHY</div>
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="hero-dot"></span> Available for opportunities</div>
+    <h1 class="hero-h" id="hero-head"><span class="cursor-blink"></span></h1>
+    <div class="hero-bottom reveal">
+      <p class="hero-desc">
+        Most people see a broken model and reach for hyperparameters.
+        I stop and ask: <em>why is it broken?</em>
+        <br><br>
+        That question changes everything 
+        <strong>what I build, how I build it,
+        whether it's even worth building.</strong>
+        <br><br>
+        Root cause first. <em>Always.</em>
+      </p>
+      <div class="hero-actions">
+        <a class="btn-main" href="#projects">See the proof ↓</a>
+        <a class="btn-sec" href="https://drive.google.com/file/d/1HDIhNk97YqGW86Lsysoc0ToTIAwtHw9h/view?usp=sharing" target="_blank"><!-- ADD RESUME URL -->Resume</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item"><span class="ticker-val">datanix</span> Live on PyPI <span class="ticker-sep">·</span> 4 versions released</span>
+    <span class="ticker-item"><span class="ticker-val">96%+</span> MNIST accuracy <span class="ticker-sep">·</span> NumPy only, zero frameworks</span>
+    <span class="ticker-item"><span class="ticker-val">ROC-AUC 0.91</span> Customer churn <span class="ticker-sep">·</span> 10,000 real users</span>
+    <span class="ticker-item"><span class="ticker-val">85%+</span> Heart failure prediction <span class="ticker-sep">·</span> 299 real patients</span>
+    <span class="ticker-item"><span class="ticker-val">6</span> projects shipped <span class="ticker-sep">·</span> all from first principles</span>
+    <span class="ticker-item"><span class="ticker-val">datanix</span> Live on PyPI <span class="ticker-sep">·</span> 4 versions released</span>
+    <span class="ticker-item"><span class="ticker-val">96%+</span> MNIST accuracy <span class="ticker-sep">·</span> NumPy only, zero frameworks</span>
+    <span class="ticker-item"><span class="ticker-val">ROC-AUC 0.91</span> Customer churn <span class="ticker-sep">·</span> 10,000 real users</span>
+    <span class="ticker-item"><span class="ticker-val">85%+</span> Heart failure prediction <span class="ticker-sep">·</span> 299 real patients</span>
+    <span class="ticker-item"><span class="ticker-val">6</span> projects shipped <span class="ticker-sep">·</span> all from first principles</span>
+  </div>
+</div>
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<section id="about">
+  <div class="about-inner">
+    <div class="sec-label">About me</div>
+    <div class="sec-head reveal-l">The kind of person<br>who asks <em>why</em> twice.</div>
+    <div class="about-grid">
+      <div class="about-card reveal d1">
+        <div class="ac-num">1</div>
+        <div class="ac-label">
+    The frustration that changed everything
+        </div>
+        <p class="ac-text">
+            I was cleaning data. <em>Again.</em>
+            Same code. Same hour wasted on janitorial
+            work before I could do any actual science.
+            <br><br>
+            I didn't rant about it. I asked:
+            <strong>why does every data scientist
+            write this same code from scratch,
+            every single time?</strong>
+            Nobody had a good answer.
+            So I built the fix and shipped it.
+        </p>
+         
+      </div>
+      <div class="about-card reveal d2">
+        <div class="ac-num">2</div>
+        <div class="ac-label">The obsession that defines me</div>
+        <p class="ac-text">
+            Using a tool without understanding it
+            felt <em>dishonest.</em>
+            I needed to feel every derivative.
+            Every weight update. Every place
+            the math could silently break.
+            <br><br>
+            So I built it from the mathematics up
+            <strong>zero frameworks,
+            every edge case handled,</strong>
+            including the ones
+            <em>no tutorial mentions.</em>
+            That's how I think about everything.
+        </p>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROJECTS ═══════════ -->
+<section id="projects" class="section">
+  <div class="sec-label">Projects</div>
+  <div class="proj-intro">
+    <div class="sec-head" style="margin-bottom:0">Real problems.<br><em>Real proof.</em></div>
+    <div class="proj-hint">Click any project to read the case study</div>
+  </div>
+
+  <!-- 01 datanix -->
+  <div class="proj-item reveal">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">01</div>
+      <div class="proj-title">datanix — Python Package</div>
+      <span class="proj-badge b-green">Live on PyPI</span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">The problem I was sick of</div>
+          <p class="cb-text">Data scientists spend <em>80% of their time</em> cleaning data. Not because they're bad at their jobs because nobody built the right tool. Every project, every team, from scratch. Same boilerplate, different dataset. I got tired of it and asked why nobody had fixed it.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">What I built & shipped</div>
+          <p class="cb-text"><strong>5 core functions</strong> check(), prepare(), fix(), report(), visualise() that compress hours of cleaning into one line of code. Validated on Titanic: 891 rows, <em>866 missing values handled correctly.</em> Cross platform verified. <strong>4 released versions.</strong> Anyone can use it today.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The proof</div>
+          <p class="cb-text">Live on PyPI. Search <em>datanix.</em> Install it. Run it. That's the proof. Not a screenshot, A working package with real version history, real changelogs, and <strong>real users who didn't have to write the same cleaning code again.</strong></p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">Python</span><span class="stag">Pandas</span><span class="stag">Matplotlib</span><span class="stag">PyPI</span><span class="stag">GitHub</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#datanix-pypi" target="_blank"><!-- ADD DATANIX PYPI URL -->PyPI</a>
+          <a class="clink" href="#datanix-github" target="_blank"><!-- ADD DATANIX GITHUB URL -->GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 Heart Failure -->
+  <div class="proj-item reveal d1">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">02</div>
+      <div class="proj-title">Heart Failure Mortality Prediction</div>
+      <span class="proj-badge b-blue">Clinical ML </span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">The stakes</div>
+          <p class="cb-text">299 real patients. 13 clinical features. 30-day mortality. Heart failure kills and <em>which features predict it</em> matters more than which model wins. I refused to stop at accuracy. I wanted to know what the model was actually seeing.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The discovery</div>
+          <p class="cb-text">Benchmarked 4 classifiers (LR, Decision Tree, Random Forest, SVM). But the real finding: <strong>serum creatinine + ejection fraction</strong> are the two root predictors not the other 11 features. That's not a stat. That's a clinical insight. <em>85%+ accuracy.</em> 12 annotated visualisations.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The process</div>
+          <p class="cb-text">End-to-end EDA before any modelling. Feature importance after. A fully reproducible Jupyter pipeline not just a notebook with outputs, but <strong>documented decisions at every step</strong> so someone else could pick it up and understand the reasoning, not just the results.</p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">Python</span><span class="stag">Scikit-Learn</span><span class="stag">Pandas</span><span class="stag">Seaborn</span><span class="stag">Google Colab</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#hf-github" target="_blank"><!-- ADD GITHUB URL -->GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 NumPy NN -->
+  <div class="proj-item reveal d2">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">03</div>
+      <div class="proj-title">Neural Network - NumPy Only</div>
+      <span class="proj-badge b-red">From Scratch</span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">Why I chose to suffer</div>
+          <p class="cb-text">Everyone uses Keras. Nobody understands what Keras does. Calling <em>model.fit()</em> and celebrating accuracy felt dishonest. I needed to implement every operation by hand, feel the chain rule, break the gradient flow, fix the numerical edge cases before I'd trust myself to use any framework.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">What nobody noticed I added</div>
+          <p class="cb-text">The standard implementation: Xavier init, ReLU, softmax, cross-entropy, mini-batch backprop. What I added: <strong>overflow-safe softmax</strong> and <em>log smoothing in cross entropy</em> production-level safeguards no tutorial mentions, because I'd read about where the numbers silently explode.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The proof</div>
+          <p class="cb-text"><em>96%+ accuracy</em> on 70,000 MNIST images. Zero TensorFlow. Zero Keras. Zero PyTorch. Every gradient computed by hand. Batch size 64, learning rate 0.01, hidden layer 128 neurons <strong>all tuned by understanding the math,</strong> not by grid search.</p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">Python</span><span class="stag">NumPy</span><span class="stag">Matplotlib</span><span class="stag">MNIST</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#nn-github" target="_blank"><!-- ADD GITHUB URL -->GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Churn -->
+  <div class="proj-item reveal">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">04</div>
+      <div class="proj-title">Customer Churn Prediction</div>
+      <span class="proj-badge b-blue">Industry · Inspire Softech</span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">The real question</div>
+          <p class="cb-text">Real company. Real 10,000-user Spotify dataset. Predicting who churns is the easy part every model can do that. Understanding <em>why they churn,</em> well enough for a retention team to actually act on it, is the hard part. I refused to stop at accuracy.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">What I delivered</div>
+          <p class="cb-text">XGBoost: <em>F1 = 0.87, ROC-AUC = 0.91.</em> Then used <strong>SHAP</strong> to rank the top 10 predictive features not just model accuracy, but explainability. K-Means segmented users into 3 behavioural clusters. CLV metric surfaced the <strong>top 5 high value accounts</strong> for a retention campaign.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The thinking</div>
+          <p class="cb-text">Also built a <em>binary purchase propensity model</em> from raw subscription and playlist data Random Forest reaching <strong>89% accuracy</strong> at flagging premium upgrade candidates. A Plotly 3D visualisation defined the personalised retention strategies for each cluster.</p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">XGBoost</span><span class="stag">SHAP</span><span class="stag">TensorFlow</span><span class="stag">K-Means</span><span class="stag">Plotly</span><span class="stag">Pandas</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#churn-github" target="_blank"><!-- ADD GITHUB URL -->GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Forecasting -->
+  <div class="proj-item reveal d1">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">05</div>
+      <div class="proj-title">Sales Demand Forecasting</div>
+      <span class="proj-badge b-blue">Time Series · Feb 2026</span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">The approach</div>
+          <p class="cb-text">Most forecasting projects pick one model and declare victory. Real data science teams <em>compare models, track experiments, document findings.</em> I built this project the way it would be built at a company with rigour, not just results.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">What I found</div>
+          <p class="cb-text">3 years of retail data. 1,000 real transactions (2012–2015). ARIMA vs Prophet compared on MAPE, every run tracked in <strong>MLflow.</strong> Discovery: <em>Q4 spikes consistently every year.</em> Technology = highest revenue category. Insights that a business could act on Monday morning.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">The reproducibility principle</div>
+          <p class="cb-text">All findings saved as charts. <strong>Anyone can reproduce every result with a single command.</strong> That's not a bonus feature, it's a baseline for how data science should work. MLflow logs every parameter, every metric, every artefact. No black boxes.</p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">Prophet</span><span class="stag">ARIMA</span><span class="stag">MLflow</span><span class="stag">Statsmodels</span><span class="stag">Pandas</span><span class="stag">Matplotlib</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#forecast-github" target="_blank"><!-- ADD GITHUB URL -->GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 VERITAS -->
+  <div class="proj-item reveal d2">
+    <div class="proj-row" onclick="toggleProj(this)">
+      <div class="proj-num">06</div>
+      <div class="proj-title">VERITAS — AI Fact Verification</div>
+      <span class="proj-badge b-red">Multi Agent AI</span>
+      <div class="proj-toggle">Case study <span class="toggle-icon">+</span></div>
+    </div>
+    <div class="case-panel">
+      <div class="case-inner">
+        <div class="case-block">
+          <div class="cb-label">The root cause</div>
+          <p class="cb-text">Misinformation spreads at machine speed. Fact checkers work at human speed. That's not a content problem it's a <em>speed asymmetry problem.</em> I asked: what's the actual bottleneck? Verification latency. So I built something to close that gap.</p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">What VERITAS does</div>
+          <p class="cb-text">Multiple AI agents working in parallel + real time web search to verify any text claim or image. Built on <strong>n8n.</strong> Designed from first principles: not "can AI help with fact checking?" but <em>"what architecture lets verification happen at the speed misinformation travels?"</em></p>
+        </div>
+        <div class="case-block">
+          <div class="cb-label">Why it matters</div>
+          <p class="cb-text">Slowing down to fact check isn't an option anymore. The system is designed to be <strong>as fast as a share button</strong> because that's the only speed that matters when misinformation is already halfway around the world before truth has its boots on.</p>
+        </div>
+      </div>
+      <div class="case-footer">
+        <div class="stack-tags">
+          <span class="stag">n8n</span><span class="stag">Multi Agent AI</span><span class="stag">Real-time Search</span>
+        </div>
+        <div class="case-links">
+          <a class="clink" href="#veritas-github" target="_blank"><!-- ADD GITHUB URL -->GitHub</a>
+          <a class="clink" href="#veritas-demo" target="_blank"><!-- ADD DEMO URL IF ANY -->Demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════ SKILLS ═══════════ -->
+<section id="skills">
+  <div class="skills-inner">
+    <div class="sec-label">Skills</div>
+    <div class="sec-head">Tools I've <em>proven,</em><br>not just listed.</div>
+    <div class="skills-grid reveal">
+      <div class="sg">
+        <div class="sg-label">Languages & Data</div>
+        <ul class="sk-list"><li>Python</li><li>SQL</li><li>NumPy</li><li>Pandas</li></ul>
+      </div>
+      <div class="sg">
+        <div class="sg-label">ML & AI</div>
+        <ul class="sk-list"><li>Scikit-Learn</li><li>XGBoost</li><li>TensorFlow</li><li>SHAP</li></ul>
+      </div>
+      <div class="sg">
+        <div class="sg-label">Visualisation</div>
+        <ul class="sk-list"><li>Matplotlib</li><li>Seaborn</li><li>Plotly</li><li>Google Colab</li></ul>
+      </div>
+      <div class="sg">
+        <div class="sg-label">Shipped & Tracked</div>
+        <ul class="sk-list"><li>PyPI</li><li>MLflow</li><li>GitHub</li><li>n8n</li></ul>
+      </div>
+    </div>
+    <p class="skill-proof">every skill above links to a project proving it — not a checkbox claiming it</p>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="sec-label">Contact</div>
+    <div class="contact-grid">
+      <div class="reveal-l">
+        <div class="sec-head">Let's work on<br>problems that<br><em>matter.</em></div>
+        <blockquote class="contact-manifesto">
+          "I don't want just any role. I want a problem worth going to the root of."
+        </blockquote>
+        <p class="contact-sub">
+          If your team moves fast, asks hard questions, and cares
+          <strong>why things work</strong>  not just that they work 
+          I want to talk to you.
+        </p>
+      </div>
+      <div class="slinks reveal d2">
+        <a class="slink" href="https://github.com/Chandravardhan02" target="_blank" rel="noopener"><!-- ADD GITHUB URL -->
+          <div class="slink-l"><div class="sl-icon">gh</div><div><div class="sl-name">GitHub</div><div class="sl-desc">Source code & all projects</div></div></div>
+          <span class="sl-arr">↗</span>
+        </a>
+        <a class="slink" href="https://www.linkedin.com/in/chandravardhan-v-r-98622a305/" target="_blank" rel="noopener"><!-- ADD LINKEDIN URL -->
+          <div class="slink-l"><div class="sl-icon">in</div><div><div class="sl-name">LinkedIn</div><div class="sl-desc">Professional profile</div></div></div>
+          <span class="sl-arr">↗</span>
+        </a>
+        <a class="slink" href="https://pypi.org/project/datanix/" target="_blank" rel="noopener"><!-- ADD PYPI PROFILE URL -->
+          <div class="slink-l"><div class="sl-icon">py</div><div><div class="sl-name">PyPI</div><div class="sl-desc">datanix — live package</div></div></div>
+          <span class="sl-arr">↗</span>
+        </a>
+        <a class="slink" href="mailto:chandravardhanvr@email.com"><!-- REPLACE youremail@email.com -->
+          <div class="slink-l"><div class="sl-icon">@</div><div><div class="sl-name">Email</div><div class="sl-desc">Fastest way to reach me</div></div></div>
+          <span class="sl-arr">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l">Built from scratch · No templates · No excuses</div>
+  <div class="foot-r">Chandravardhan <!-- REPLACE --> · 2026</div>
+</footer>
+
+<script>
+/* ── CURSOR ──────────────────────────────────── */
+const cur=document.getElementById('cur');
+const trail=document.getElementById('cur-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+(function loop(){
+  tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;
+  trail.style.left=tx+'px';trail.style.top=ty+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
+document.addEventListener('mousedown',()=>document.body.classList.add('clicking'));
+document.addEventListener('mouseup',()=>document.body.classList.remove('clicking'));
+
+/* ── TYPEWRITER HERO ─────────────────────────── */
+const head=document.getElementById('hero-head');
+const phrases=[
+  {text:"I don't just\nsolve problems.",italic:false},
+  {text:"I find ",italic:false,suffix:"why",suffixItalic:true,tail:"\nthey exist.",tailItalic:false}
+];
+function buildHTML(phrase){
+  if(phrase.suffix){
+    return phrase.text+'<em>'+phrase.suffix+'</em>'+phrase.tail;
+  }
+  return phrase.text;
+}
+let pi=0,ci=0,deleting=false,hold=0;
+function type(){
+  if(hold>0){hold--;setTimeout(type,60);return;}
+  const ph=phrases[pi];
+  const full=(ph.text+(ph.suffix||'')+(ph.tail||'')).replace(/\n/g,'↵');
+  const disp=full.slice(0,ci);
+  // rebuild display
+  let html=disp.replace(/↵/g,'<br>');
+  if(ph.suffix){
+    const before=ph.text.replace(/\n/g,'<br>');
+    const sufStart=ph.text.length;
+    const tailStart=ph.text.length+(ph.suffix||'').length;
+    if(ci>tailStart){
+      html=before+'<em>'+ph.suffix+'</em>'+(ph.tail||'').slice(0,ci-tailStart).replace(/\n/g,'<br>');
+    } else if(ci>sufStart){
+      html=before+'<em>'+(ph.suffix||'').slice(0,ci-sufStart)+'</em>';
+    } else {
+      html=ph.text.slice(0,ci).replace(/\n/g,'<br>');
+    }
+  }
+  head.innerHTML=html+'<span class="cursor-blink"></span>';
+
+  if(!deleting){
+    ci++;
+    if(ci>full.length){
+      if(pi===phrases.length-1){
+        // final state - no cursor
+        head.innerHTML='I don\'t just<br>solve problems.<br>I find <em>why</em><br>they exist.';
+        return;
+      }
+      hold=30;deleting=true;
+    }
+    setTimeout(type,deleting?25:55);
+  } else {
+    ci--;
+    if(ci===0){deleting=false;pi++;hold=8;}
+    setTimeout(type,28);
+  }
+}
+setTimeout(type,800);
+
+/* ── PROJECT TOGGLE ──────────────────────────── */
+function toggleProj(row){
+  const item=row.closest('.proj-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.proj-item.open').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
+
+/* ── SCROLL REVEAL ───────────────────────────── */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');revObs.unobserve(e.target);}});
+},{threshold:0.12});
+document.querySelectorAll('.reveal,.reveal-l').forEach(el=>revObs.observe(el));
+
+/* ── ANIMATED COUNTERS IN TICKER ─────────────── */
+// Ticker is CSS-animated, stats are in the ticker text
+
+/* ── ACTIVE NAV ──────────────────────────────── */
+const secs=document.querySelectorAll('section[id],#about,#skills,#contact');
+const links=document.querySelectorAll('.nav-links a');
+const navObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.style.color='');
+      const active=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if(active)active.style.color='var(--ink)';
+    }
+  });
+},{threshold:0.5});
+document.querySelectorAll('section[id]').forEach(s=>navObs.observe(s));
+</script>
+</body>
+</html>
